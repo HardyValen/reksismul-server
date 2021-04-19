@@ -10,7 +10,7 @@ module.exports = {
         primaryKey: true,
       },
       id_angkot: {
-        type: Sequelize.UUID,
+        type: Sequelize.STRING,
         references: {
           model: 'Angkot',
           key: 'id_angkot'

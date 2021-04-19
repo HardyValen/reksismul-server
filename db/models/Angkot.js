@@ -7,8 +7,7 @@ module.exports = (sequelize, DataTypes) => {
   
   Angkot.init({
     id_angkot: {
-      type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
+      type: DataTypes.STRING,
       unique: true,
       allowNull: false,
       primaryKey: true

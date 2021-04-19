@@ -3,8 +3,7 @@ module.exports = {
   up: async (queryInterface, Sequelize) => {
     await queryInterface.createTable('Angkot', {
       id_angkot: {
-        type: Sequelize.UUID,
-        defaultValue: Sequelize.UUIDV4,
+        type: Sequelize.STRING,
         unique: true,
         allowNull: false,
         primaryKey: true

@@ -14,7 +14,7 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
     },
     id_angkot: {
-      type: DataTypes.UUID,
+      type: DataTypes.STRING,
       references: {
         model: 'Angkot',
         key: 'id_angkot'

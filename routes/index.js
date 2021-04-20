@@ -141,7 +141,7 @@ router.post("/angkot", async function(req, res) {
   }
 })
 
-// DEPRECATED
+// DEPRECATED {PUT}, JADI UPSERT SAMA ANGKOT SAJA
 router.put("/angkot", async function(req, res) {
   const {id_angkot, id_jenis_angkot} = req.body;
   const t = await sequelize.transaction();

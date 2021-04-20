@@ -145,4 +145,30 @@ router.post("/angkot", async function(req, res) {
   }
 })
 
+router.put("/angkot", async function(req, res) {
+  const {id_angkot, id_jenis_angkot} = req.body;
+  const t = await sequelize.transaction();
+
+  try {
+    await Angkot.update(
+      {
+        id_jenis_angkot
+      },
+      {
+        where: { 
+          id_angkot,
+        },
+        transaction: t
+      }
+    )
+
+    await t.commit();
+    res.status(200).send(`Angkot ${id_angkot} berjenis ${id_jenis_angkot} berhasil diupdate`)
+
+  } catch (error) {
+    await t.rollback();
+    res.status(500).send(error.message)
+  }
+})
+
 module.exports = router;

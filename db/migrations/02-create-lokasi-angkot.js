@@ -5,11 +5,14 @@ module.exports = {
       id_lokasi: {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
+        // unique: true,
+        // allowNull: false,
+        // primaryKey: true,
+      },
+      id_angkot: {
         unique: true,
         allowNull: false,
         primaryKey: true,
-      },
-      id_angkot: {
         type: Sequelize.STRING,
         references: {
           model: 'Angkot',

@@ -9,11 +9,11 @@ module.exports = (sequelize, DataTypes) => {
     id_lokasi: {
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4,
+    },
+    id_angkot: {
       unique: true,
       allowNull: false,
       primaryKey: true,
-    },
-    id_angkot: {
       type: DataTypes.STRING,
       references: {
         model: 'Angkot',

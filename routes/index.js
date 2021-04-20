@@ -9,10 +9,6 @@ const LokasiAngkot = require('../db/models/LokasiAngkot')(sequelize, DataTypes);
 const PemberhentianAngkot = require('../db/models/PemberhentianAngkot')(sequelize, DataTypes);
 const {v4 : uuidv4} = require('uuid')
 
-Angkot.hasOne(JenisAngkot, {
-  foreignKey: "id_jenis_angkot"
-})
-
 router.get('/jenis-angkot', function(req, res) {
   JenisAngkot.findAll().then(data => {
     res.send(data)
@@ -22,22 +18,53 @@ router.get('/jenis-angkot', function(req, res) {
   })
 });
 
-router.post("/lokasi-angkot", function(req, res) {
-  const { id_angkot } = req.body;
-  LokasiAngkot.create({
-    id_lokasi: uuidv4(),
-    id_angkot: id_angkot,
-    latitude: null,
-    longitude: null,
-  })
-  .then(() => {
-    res.send(`created new entry for ${id_angkot}`)
-  })
-  .catch((error) => {
+router.post("/lokasi-angkot", async function(req, res) {
+  const { id_angkot, latitude, longitude } = req.body;
+  const t = await sequelize.transaction();
+
+  try {
+    let [upsertModel, upsertStatus] = await LokasiAngkot.upsert(
+      {
+        id_angkot,
+        latitude,
+        longitude,
+      },
+      {
+        fields: ['id_angkot', 'latitude', 'longitude'],
+        transaction: t
+      }
+    )
+  
+    await t.commit();
+    res.send(`upserted location entry for ${id_angkot}`)
+  } catch (error) {
+    await t.rollback();
     res.status(500).send(error.message)
-  })
+  }
+  
 })
 
+router.delete("/lokasi-angkot", async function(req, res) {
+  const { id_angkot } = req.body;
+  const t = await sequelize.transaction();
+
+  try {
+    await LokasiAngkot.destroy(
+      {
+        where: { id_angkot },
+        transaction: t
+      }
+    )
+    await t.commit();
+    res.send(`deleted entry of Angkot with id ${id_angkot}`)
+  } catch (error) {
+    await t.rollback();
+    res.status(500).send(error.message)
+  }
+})
+
+
+// {DEPRECATED} PUT /reksismul/data/lokasi-angkot
 router.put("/lokasi-angkot", function(req, res) {
   const {id_angkot, latitude, longitude} = req.body;
 
@@ -54,6 +81,7 @@ router.put("/lokasi-angkot", function(req, res) {
   })
 })
 
+// GET /reksismul/data/lokasi-angkot
 router.get("/lokasi-angkot", async function(req, res) {
   const {id_jenis_angkot} = req.query;
 
@@ -76,7 +104,8 @@ router.get("/lokasi-angkot", async function(req, res) {
     let tempData = await LokasiAngkot.findAll({
       where: {
         id_angkot: tempAngkot
-      }
+      },
+      transaction: t
     })
 
     await t.commit();
@@ -88,8 +117,32 @@ router.get("/lokasi-angkot", async function(req, res) {
   }
 })
 
-router.get("/ping", (req, res) => {
-  res.status(200).send("pong")
+router.post("/angkot", async function(req, res) {
+  const {id_angkot, id_jenis_angkot} = req.body;
+  const t = await sequelize.transaction();
+
+  try {
+    let [temp, bool] = await Angkot.findOrCreate(
+      {
+        where: { 
+          id_angkot,
+          id_jenis_angkot
+        },
+        transaction: t
+      }
+    )
+
+    await t.commit();
+    res.status(200).send(
+      bool 
+        ? `Angkot ${id_angkot} berjenis ${id_jenis_angkot} berhasil didaftarkan`
+        : `Angkot ${id_angkot} berjenis ${id_jenis_angkot} sudah ada di database`
+    )
+
+  } catch (error) {
+    await t.rollback();
+    res.status(500).send(error.message)
+  }
 })
 
 module.exports = router;

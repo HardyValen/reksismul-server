@@ -2,6 +2,7 @@ const { Sequelize } = require("sequelize");
 const dbConfig = require("../config/db-config.json")
 
 // Change connection type
+// const connType = "remote"
 const connType = "development"
 
 const sequelize = new Sequelize(

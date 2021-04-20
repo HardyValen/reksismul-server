@@ -23,7 +23,7 @@ router.post("/lokasi-angkot", async function(req, res) {
   const t = await sequelize.transaction();
 
   try {
-    let [upsertModel, upsertStatus] = await LokasiAngkot.upsert(
+    await LokasiAngkot.upsert(
       {
         id_angkot,
         latitude,
@@ -122,22 +122,18 @@ router.post("/angkot", async function(req, res) {
   const t = await sequelize.transaction();
 
   try {
-    let [temp, bool] = await Angkot.findOrCreate(
+    await Angkot.upsert(
       {
-        where: { 
-          id_angkot,
-          id_jenis_angkot
-        },
+        id_angkot,
+        id_jenis_angkot
+      },
+      {
         transaction: t
       }
     )
 
     await t.commit();
-    res.status(200).send(
-      bool 
-        ? `Angkot ${id_angkot} berjenis ${id_jenis_angkot} berhasil didaftarkan`
-        : `Angkot ${id_angkot} berjenis ${id_jenis_angkot} sudah ada di database`
-    )
+    res.status(200).send(`Angkot ${id_angkot} berjenis ${id_jenis_angkot} berhasil didaftarkan`)
 
   } catch (error) {
     await t.rollback();
@@ -145,6 +141,7 @@ router.post("/angkot", async function(req, res) {
   }
 })
 
+// DEPRECATED
 router.put("/angkot", async function(req, res) {
   const {id_angkot, id_jenis_angkot} = req.body;
   const t = await sequelize.transaction();

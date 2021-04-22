@@ -168,4 +168,19 @@ router.put("/angkot", async function(req, res) {
   }
 })
 
+router.get("/pemberhentian-angkot", async function(req, res) {
+  const {id_jenis_angkot, order, latitude, longitude} = req.query;
+  JenisAngkot.findAll(
+    {
+      where: {id_jenis_angkot},
+      order: [[order, 'DESC']]
+    }
+  ).then(data => {
+    res.send(data)
+  })
+  .catch((error) => {
+    res.status(500).send(error.message)
+  })
+})
+
 module.exports = router;

@@ -170,7 +170,7 @@ router.put("/angkot", async function(req, res) {
 
 router.get("/pemberhentian-angkot", async function(req, res) {
   const {id_jenis_angkot} = req.query;
-  JenisAngkot.findAll(
+  PemberhentianAngkot.findAll(
     {
       where: {id_jenis_angkot},
       order: [["order", 'DESC']]

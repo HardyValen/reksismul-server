@@ -168,6 +168,8 @@ router.put("/angkot", async function(req, res) {
   }
 })
 
+
+// PEMBERHENTIAN ANGKOT
 router.get("/pemberhentian-angkot", async function(req, res) {
   const {id_jenis_angkot} = req.query;
   PemberhentianAngkot.findAll(
@@ -181,6 +183,42 @@ router.get("/pemberhentian-angkot", async function(req, res) {
   .catch((error) => {
     res.status(500).send(error.message)
   })
+})
+
+router.post("/pemberhentian-angkot", async function(req, res) {
+  const {id_jenis_angkot, order, latitude, longitude} = req.body;
+  PemberhentianAngkot.create(
+    {
+      id_jenis_angkot,
+      order,
+      latitude,
+      longitude
+    }
+  ).then(data => {
+    res.send(data)
+  })
+  .catch((error) => {
+    res.status(500).send(error.message)
+  })
+})
+
+router.delete("/pemberhentian-angkot", async function(req, res) {
+  const {id_pemberhentian} = req.body;
+  const t = await sequelize.transaction();
+
+  try {
+    await PemberhentianAngkot.destroy(
+      {
+        where: { id_pemberhentian },
+        transaction: t
+      }
+    )
+    await t.commit();
+    res.send(`deleted entry of Pemberhentian Angkot with id ${id_pemberhentian}`)
+  } catch (error) {
+    await t.rollback();
+    res.status(500).send(error.message)
+  }
 })
 
 module.exports = router;
